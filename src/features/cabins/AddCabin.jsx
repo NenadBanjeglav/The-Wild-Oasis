@@ -2,7 +2,6 @@ import React from "react";
 import Button from "../../ui/Button";
 import Modal from "../../ui/Modal";
 import CabinForm from "./CabinForm";
-import CabinTable from "./CabinTable";
 
 const AddCabin = () => {
   return (
