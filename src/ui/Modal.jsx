@@ -1,5 +1,14 @@
 import styled from "styled-components";
 
+import React, {
+  cloneElement,
+  createContext,
+  useContext,
+  useState,
+} from "react";
+import { HiXMark } from "react-icons/hi2";
+import { createPortal } from "react-dom";
+
 const StyledModal = styled.div`
   position: fixed;
   top: 50%;
@@ -48,3 +57,46 @@ const Button = styled.button`
     color: var(--color-grey-500);
   }
 `;
+
+const ModalContext = createContext();
+
+const Modal = ({ children }) => {
+  const [openName, setOpenName] = useState("");
+  const close = () => setOpenName("");
+  const open = setOpenName;
+
+  return (
+    <ModalContext.Provider value={{ openName, close, open }}>
+      {children}
+    </ModalContext.Provider>
+  );
+};
+
+const Open = ({ children, opens: opensWindowName }) => {
+  const { open } = useContext(ModalContext);
+
+  return cloneElement(children, { onClick: () => open(opensWindowName) });
+};
+
+const Window = ({ children, name }) => {
+  const { openName, close } = useContext(ModalContext);
+
+  if (name !== openName) return null;
+
+  return createPortal(
+    <Overlay>
+      <StyledModal>
+        <Button onClick={close}>
+          <HiXMark />
+        </Button>
+        <div>{cloneElement(children, { onClose: close })}</div>
+      </StyledModal>
+    </Overlay>,
+    document.body
+  );
+};
+
+Modal.Open = Open;
+Modal.Window = Window;
+
+export default Modal;
