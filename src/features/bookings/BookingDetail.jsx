@@ -7,8 +7,10 @@ import Tag from "../../ui/Tag";
 import ButtonGroup from "../../ui/ButtonGroup";
 import Button from "../../ui/Button";
 import ButtonText from "../../ui/ButtonText";
+import Spinner from "../../ui/Spinner";
 
 import { useMoveBack } from "../../hooks/useMoveBack";
+import useFetchBooking from "./useFetchBooking";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -17,10 +19,13 @@ const HeadingGroup = styled.div`
 `;
 
 function BookingDetail() {
-  const booking = {};
-  const status = "checked-in";
+  const { booking, isLoading } = useFetchBooking();
 
   const moveBack = useMoveBack();
+
+  const status = booking?.data?.status || "";
+  const id = booking?.data?.id;
+  if (isLoading) return <Spinner />;
 
   const statusToTagName = {
     unconfirmed: "blue",
@@ -32,13 +37,13 @@ function BookingDetail() {
     <>
       <Row type="horizontal">
         <HeadingGroup>
-          <Heading as="h1">Booking #X</Heading>
+          <Heading as="h1">Booking {id}</Heading>
           <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
         </HeadingGroup>
         <ButtonText onClick={moveBack}>&larr; Back</ButtonText>
       </Row>
 
-      <BookingDataBox booking={booking} />
+      <BookingDataBox booking={booking.data} />
 
       <ButtonGroup>
         <Button variation="secondary" onClick={moveBack}>
